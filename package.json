@@ -1,0 +1,20 @@
+{
+  "name": "mysite",
+  "type": "module",
+  "version": "1.0.0",
+  "description": "",
+  "main": "./create-index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/viocha/mysite.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/viocha/mysite/issues"
+  },
+  "homepage": "https://github.com/viocha/mysite#readme"
+}
