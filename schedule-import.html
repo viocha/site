@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>导入课表页面</title>
+    <style>
+        body {
+            min-width: 0;
+        }
+
+        .content {
+            text-align: center;
+            margin-bottom: 200px;
+        }
+
+        .semesters {
+            padding: .5em;
+        }
+
+        .semesters select,
+        .btn-group button {
+            text-align: center;
+            padding: .2em .3em;
+        }
+
+        .btn-group button {
+            margin: .5em .5em;
+        }
+
+        .tip {
+            color: red;
+        }
+
+        .tip,
+        .table-content {
+            margin: 3vh auto;
+        }
+
+        table {
+            border-collapse: collapse;
+        }
+
+        table caption {
+            padding: .5em;
+        }
+
+        table col:nth-child(1) {
+            width: 10vw;
+        }
+
+        table col:nth-child(2) {
+            width: 50vw;
+        }
+
+        table col:nth-child(3) {
+            width: 35vw;
+        }
+
+        table th,
+        table td {
+            border: 1px solid;
+            padding: 5px 10px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="content">
+        <fieldset>
+            <legend>请选择学期</legend>
+            <div class="semesters">
+                <select id="semesterSelect">
+                    <option value="56">大三 上学期</option>
+                    <option selected="" value="57">大三 下学期学期</option>
+                </select>
+            </div>
+            <div class="btn-group">
+                <button id="prevBtn">&lt;&lt; 上学期</button>
+                <button id="confirmBtn">确认导入</button>
+                <button id="nextBtn">下学期 &gt;&gt;</button>
+            </div>
+        </fieldset>
+
+        <div class="tip">所选学期无课程信息！</div>
+
+        <div class="table-content">
+            <table>
+                <caption>课表预览</caption>
+                <colgroup>
+                    <col>
+                    <col>
+                    <col>
+                </colgroup>
+                <thead>
+                    <tr>
+                        <th>
+                            序号
+                        </th>
+                        <th>
+                            课程名称
+                        </th>
+                        <th>
+                            任课教师
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>
+                            1
+                        </td>
+                        <td>
+                            抽象代数
+                        </td>
+                        <td>
+                            张驰
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            2
+                        </td>
+                        <td>
+                            微分几何
+                        </td>
+                        <td>
+                            杨云
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</body>
+
+</html>
