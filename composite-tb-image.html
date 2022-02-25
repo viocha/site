@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>刷单图片生成</title>
+  <script type="module">
+    const canvas = document.createElement('canvas');
+    const ctx = canvas.getContext('2d');
+
+    form.onchange = async () => {
+      const contentFile = contentImgInput.files[0];
+      const timeFile = timeImgInput.files[0];
+
+      if (contentFile && timeFile) {
+        const contentImg = await fileToImg(contentFile),
+            timeImg = await fileToImg(timeFile);
+
+        canvas.width = contentImg.width;
+        canvas.height = contentImg.height;
+        ctx.drawImage(contentImg, 0, 0);
+
+        const [sBox, dBox] = getDrawingBoxes(contentImg, timeImg);
+        ctx.drawImage(timeImg, ...sBox, ...dBox);
+
+        canvas.toBlob(blob => {
+          outputImg.src = URL.createObjectURL(blob);
+          info.textContent = `图片尺寸：宽${canvas.width}，高${canvas.height}`;
+          imgDownload.download = `Screenshot_${Date.now()}.jpg`;  //todo:日期格式化
+          imgDownload.href = outputImg.src;
+          imgDownload.textContent = '点击下载';
+        });
+      }
+
+    };
+
+    async function fileToImg(file) {
+      const img = document.createElement('img');
+      img.src = URL.createObjectURL(file);
+      return new Promise(resolve => {
+        img.onload = () => {
+          resolve(img);
+        };
+      });
+    }
+
+    function getDrawingBoxes(contentImg, timeImg) {
+      let sxValue = sx.value,
+          syValue = sy.value,
+          sWithValue = sWith.value,
+          sHeightValue = sHeight.value,
+          dxValue = dx.value,
+          dyValue = dy.value,
+          dWithValue = dWith.value,
+          dHeightValue = dHeight.value;
+      if (sxValue === '') {
+        sxValue = sx.value = 0;
+      }
+      if (syValue === '') {
+        syValue = sy.value = 0;
+      }
+      if (sWithValue === '') {
+        sWithValue = sWith.value = timeImg.width;
+      }
+      if (sHeightValue === '') {
+        sHeightValue = sHeight.value = 75;
+      }
+      if (dxValue === '') {
+        dxValue = dx.value = 0;
+      }
+      if (dyValue === '') {
+        dyValue = dy.value = 0;
+      }
+      if (dWithValue === '') {
+        const contentWith = contentImg.width;
+        dWithValue = dWith.value = sWithValue <= contentWith ?
+            sWithValue :
+            contentWith;
+      }
+      if (dHeightValue === '') {
+        const contentHeight = contentImg.height;
+        dHeightValue = dHeight.value = sHeightValue <= contentHeight ?
+            sHeightValue :
+            contentHeight;
+      }
+      return [
+        [sxValue, syValue, sWithValue, sHeightValue],
+        [dxValue, dyValue, dWithValue, dHeightValue],
+      ];
+    }
+
+
+  </script>
+  <style>
+    form > div {
+      margin: .3em 0;
+    }
+
+    .number {
+      width: 6em;
+      margin-right: 1em;
+    }
+
+    #outputImg {
+      width: 90vw;
+    }
+  </style>
+</head>
+<body>
+<form id="form">
+  <div>
+    <label for="contentImgInput">内容截图：</label>
+    <input accept="image/*" id="contentImgInput" name="contentImgInput"
+           type="file">
+  </div>
+  <div>
+    <label for="timeImgInput">时间截图：</label>
+    <input accept="image/*" id="timeImgInput" name="timeImgInput" type="file">
+  </div>
+  <div>
+    <label for="sx">sx：</label>
+    <input class="number" id="sx" name="sx" type="number">
+    <label for="sy">sy：</label>
+    <input class="number" id="sy" name="sy" type="number">
+    <label for="sWith">sWith：</label>
+    <input class="number" id="sWith" name="sWith" type="number">
+    <label for="sHeight">sHeight：</label>
+    <input class="number" id="sHeight" name="sHeight" type="number">
+  </div>
+  <div>
+    <label for="dx">dx：</label>
+    <input class="number" id="dx" name="dx" type="number">
+    <label for="dy">dy：</label>
+    <input class="number" id="dy" name="dy" type="number">
+    <label for="dWith">dWith：</label>
+    <input class="number" id="dWith" name="dWith" type="number">
+    <label for="dHeight">dHeight：</label>
+    <input class="number" id="dHeight" name="dHeight" type="number">
+  </div>
+  <output>
+    <div id="info"></div>
+    <div><a id="imgDownload"></a></div>
+    <div><img alt="" id="outputImg" src=""></div>
+  </output>
+</form>
+
+
+</body>
+</html>
