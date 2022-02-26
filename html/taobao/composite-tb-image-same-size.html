@@ -32,13 +32,11 @@
 
       ctx.drawImage(coverImg, ...sBox, ...sBox);
 
-      canvas.toBlob(blob => {
-        outputImg.src = URL.createObjectURL(blob);
-        info.textContent = `图片尺寸：宽${canvas.width}，高${canvas.height}`;
-        imgDownload.download = `Screenshot_${Date.now()}.jpg`;  //todo:日期格式化
-        imgDownload.href = outputImg.src;
-        imgDownload.textContent = '点击下载';
-      });
+      outputImg.src = canvas.toDataURL('image/jpeg', 1);
+      info.textContent = `图片尺寸：宽${canvas.width}，高${canvas.height}`;
+      imgDownload.download = `Screenshot_${Date.now()}.jpg`;  //todo:日期格式化
+      imgDownload.href = outputImg.src;
+      imgDownload.textContent = '点击下载';
 
     };
 
