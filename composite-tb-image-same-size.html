@@ -7,20 +7,27 @@
     const canvas = document.createElement('canvas');
     const ctx = canvas.getContext('2d');
 
-    form.onchange = async () => {
+    form.onchange = async (event) => {
       const contentFile = contentImgInput.files[0];
-      const timeFile = timeImgInput.files[0];
+      const coverFile = coverImgInput.files[0];
 
-      if (contentFile && timeFile) {
+      if (contentFile && coverFile) {
         const contentImg = await fileToImg(contentFile),
-            timeImg = await fileToImg(timeFile);
+            coverImg = await fileToImg(coverFile);
 
         canvas.width = contentImg.width;
         canvas.height = contentImg.height;
         ctx.drawImage(contentImg, 0, 0);
 
-        const sBox = getDrawingBoxes(contentImg, timeImg);
-        ctx.drawImage(timeImg, ...sBox, ...sBox);
+        let sBox;
+        if (event.target.nodeName === 'SELECT') {
+          const type = +clipType.value;
+          sBox = getClipBox(coverImg, type);
+        } else {
+          sBox = getClipBox(coverImg);
+        }
+
+        ctx.drawImage(coverImg, ...sBox, ...sBox);
 
         canvas.toBlob(blob => {
           outputImg.src = URL.createObjectURL(blob);
@@ -43,24 +50,24 @@
       });
     }
 
-    function getDrawingBoxes(contentImg, timeImg) {
+    function getClipBox(coverImg, type) {
+      const boxes = [
+        [45, 620, 986, 172],
+        [0, 0, coverImg.width, 75],
+      ];
       let sxValue = sx.value,
           syValue = sy.value,
           sWithValue = sWith.value,
           sHeightValue = sHeight.value;
-      if (sxValue === '') {
-        sxValue = sx.value = 0;
+      if (sxValue + syValue + sWithValue + sHeightValue === '') {
+        type = 0;
       }
-      if (syValue === '') {
-        syValue = sy.value = 0;
+      if (typeof type === 'number') {
+        sxValue = sx.value = boxes[type][0];
+        syValue = sy.value = boxes[type][1];
+        sWithValue = sWith.value = boxes[type][2];
+        sHeightValue = sHeight.value = boxes[type][3];
       }
-      if (sWithValue === '') {
-        sWithValue = sWith.value = timeImg.width;
-      }
-      if (sHeightValue === '') {
-        sHeightValue = sHeight.value = 75;
-      }
-
       return [sxValue, syValue, sWithValue, sHeightValue];
     }
 
@@ -77,7 +84,7 @@
     }
 
     #outputImg {
-      width: 90vw;
+      width: 80vw;
     }
   </style>
 </head>
@@ -89,8 +96,15 @@
            type="file">
   </div>
   <div>
-    <label for="timeImgInput">时间截图：</label>
-    <input accept="image/*" id="timeImgInput" name="timeImgInput" type="file">
+    <label for="coverImgInput">覆盖截图：</label>
+    <input accept="image/*" id="coverImgInput" name="coverImgInput" type="file">
+  </div>
+  <div>
+    <label for="clipType">剪切类型：</label>
+    <select id="clipType" name="clipType">
+      <option value="0">待收货</option>
+      <option value="1">时间</option>
+    </select>
   </div>
   <div>
     <label for="sx">sx：</label>
