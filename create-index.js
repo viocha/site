@@ -2,6 +2,7 @@ const fs = require('fs');
 const path = require('path');
 
 let html = '';
+
 scanHtmlFiles('./html');
 fs.writeFileSync('index.html', html, { encoding: 'utf8' });
 
