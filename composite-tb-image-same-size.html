@@ -11,32 +11,34 @@
       const contentFile = contentImgInput.files[0];
       const coverFile = coverImgInput.files[0];
 
-      if (contentFile && coverFile) {
-        const contentImg = await fileToImg(contentFile),
-            coverImg = await fileToImg(coverFile);
-
-        canvas.width = contentImg.width;
-        canvas.height = contentImg.height;
-        ctx.drawImage(contentImg, 0, 0);
-
-        let sBox;
-        if (event.target.nodeName === 'SELECT') {
-          const type = +clipType.value;
-          sBox = getClipBox(coverImg, type);
-        } else {
-          sBox = getClipBox(coverImg);
-        }
-
-        ctx.drawImage(coverImg, ...sBox, ...sBox);
-
-        canvas.toBlob(blob => {
-          outputImg.src = URL.createObjectURL(blob);
-          info.textContent = `图片尺寸：宽${canvas.width}，高${canvas.height}`;
-          imgDownload.download = `Screenshot_${Date.now()}.jpg`;  //todo:日期格式化
-          imgDownload.href = outputImg.src;
-          imgDownload.textContent = '点击下载';
-        });
+      if (!contentFile || !coverFile) {
+        return;
       }
+
+      const contentImg = await fileToImg(contentFile),
+          coverImg = await fileToImg(coverFile);
+
+      canvas.width = contentImg.width;
+      canvas.height = contentImg.height;
+      ctx.drawImage(contentImg, 0, 0);
+
+      let sBox;
+      if (event.target.nodeName === 'SELECT') {
+        const type = +clipType.value;
+        sBox = getClipBox(coverImg, type);
+      } else {
+        sBox = getClipBox(coverImg);
+      }
+
+      ctx.drawImage(coverImg, ...sBox, ...sBox);
+
+      canvas.toBlob(blob => {
+        outputImg.src = URL.createObjectURL(blob);
+        info.textContent = `图片尺寸：宽${canvas.width}，高${canvas.height}`;
+        imgDownload.download = `Screenshot_${Date.now()}.jpg`;  //todo:日期格式化
+        imgDownload.href = outputImg.src;
+        imgDownload.textContent = '点击下载';
+      });
 
     };
 
