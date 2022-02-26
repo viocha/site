@@ -3,7 +3,6 @@ const path = require('path');
 
 let html = '';
 scanHtmlFiles('./html');
-// html = `<ul>${html}</ul>`;
 fs.writeFileSync('index.html', html, { encoding: 'utf8' });
 
 function scanHtmlFiles(dir) {
