@@ -11,7 +11,8 @@ function scanHtmlFiles(dir) {
         forEach(name => {
             const fullName = path.join(dir, name);
             if (fs.statSync(fullName).isFile && fullName.endsWith('.html')) {
-                html += `<div><a href="${fullName}">${fullName.slice(0, -5)}</a></div>`;
+                const indent = fullName.match(/\\/g)?.length || 0;
+                html += `<div style="padding-left:${indent}em;"><a href="${fullName}">${fullName.slice(0, -5)}</a></div>`;
             }
             else {
                 scanHtmlFiles(fullName);
