@@ -1,9 +1,20 @@
-import fs from 'fs';
+const fs = require('fs');
+const path = require('path');
 
-let html='';
-fs.readdirSync('.').
-    filter(n => n.endsWith('.html') && n !== 'index.html').forEach(n=>{
-        html+=`<li><a href="${n}">${n.slice(0,-5)}</a></li>`;
-    });
-html=`<ul>${html}</ul>`;
+let html = '';
+scanHtmlFiles('./html');
+// html = `<ul>${html}</ul>`;
 fs.writeFileSync('index.html', html, { encoding: 'utf8' });
+
+function scanHtmlFiles(dir) {
+    fs.readdirSync(dir).
+        forEach(name => {
+            const fullName = path.join(dir, name);
+            if (fs.statSync(fullName).isFile && fullName.endsWith('.html')) {
+                html += `<div><a href="${fullName}">${fullName.slice(0, -5)}</a></div>`;
+            }
+            else {
+                scanHtmlFiles(fullName);
+            }
+        });
+}
