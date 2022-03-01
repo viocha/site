@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>刷单图片合成</title>
+  <script type="module">
+    const canvas = document.createElement('canvas');
+    const form = document.getElementById('form');
+    const ctx = canvas.getContext('2d');
+
+    const defaultBoxes = [
+      [[45, 620, 986, 172]],
+      [[0, 0, 1080, 75]],
+      [],
+      [[698, 2233, -168, 56], [1026, 1151, -132, 44]],
+    ];
+
+    form.onchange = async (event) => {
+      const [contentImgInput, coverImgInput] =
+          ['contentImgInput', 'coverImgInput'].
+              map(id => document.getElementById(id));
+      let contentFile = contentImgInput.files[0];
+      let coverFile = coverImgInput.files[0];
+
+      if (!canDraw()) {
+        return;
+      }
+
+      if (!contentFile) {
+        contentFile = coverFile;
+      }
+      if (!coverFile) {
+        coverFile = contentFile;
+      }
+      const contentImg = await fileToImg(contentFile),
+          coverImg = await fileToImg(coverFile);
+      canvas.width = contentImg.width;
+      canvas.height = contentImg.height;
+      ctx.drawImage(contentImg, 0, 0);
+
+      const boxPairs = getClipBoxes(event.target, coverImg);
+
+      for (const [sBox, dBox] of boxPairs) {
+        ctx.drawImage(coverImg, ...sBox, ...dBox);
+      }
+
+      const [outputImg, imgDownload] = ['outputImg', 'imgDownload'].
+          map(id => document.getElementById(id));
+      outputImg.src = canvas.toDataURL('image/jpeg', 1);
+      info.textContent = `图片尺寸：宽${canvas.width}，高${canvas.height}`;
+      imgDownload.download = `Screenshot_${Date.now()}.jpg`;  //todo:日期格式化
+      imgDownload.href = outputImg.src;
+      imgDownload.textContent = '点击下载';
+
+    };
+
+    document.getElementById('sWidth').onchange = () => {
+      const clipType = +document.getElementById('clipType').value;
+      if (clipType !== 3) {
+        return;
+      }
+      let [sBox, dBox] = getClipBoxInputs(clipType);
+      dBox[2] = Math.floor(sBox[2] * 44 / 56);
+      setClipBoxInputs(sBox, dBox);
+    };
+
+    async function fileToImg(file) {
+      const img = document.createElement('img');
+      img.src = URL.createObjectURL(file);
+      return new Promise(resolve => {
+        img.onload = () => {
+          resolve(img);
+        };
+      });
+    }
+
+    function canDraw() {
+      const hasContentImgInput = Boolean(document.getElementById(
+          'contentImgInput').files[0]);
+      const hasCoverImgInput = Boolean(document.getElementById(
+          'coverImgInput').files[0]);
+      const clipType = +document.getElementById('clipType').value;
+
+      if (clipType === 2 && (hasContentImgInput || hasCoverImgInput)) {
+        return true;
+      }
+
+      return hasContentImgInput && hasCoverImgInput;
+    }
+
+    function getClipBoxes(changeTarget, coverImg) {
+      const clipType = +document.getElementById('clipType').value;
+      const [sBoxInput, dBoxInput] = getClipBoxInputs(clipType);
+      const boxPairs = [];
+
+      const nodeName = changeTarget.nodeName;
+      switch (clipType) {
+        case 3: { // todo: 实付款
+          enableClipBoxInputs();
+          disableClipBoxInputs(2);
+          let sBox, dBox;
+          if (nodeName === 'SELECT' ||
+              (nodeName === 'INPUT' && changeTarget.type === 'file')) {
+            [sBox, dBox] = getDefaultBoxes(clipType);
+            const startX = getStartX(coverImg);
+            sBox[2] = (698 - startX + 1);
+            dBox[2] = (Math.floor(sBox[2] * 44 / 56));
+            sBox[2] = -sBox[2];
+            dBox[2] = -dBox[2];
+            ctx.fillStyle = 'white';
+            ctx.fillRect(1026, 1151, -540, 44);
+          } else { // 修改尺寸
+            [sBox, dBox] = [sBoxInput, dBoxInput];
+          }
+          boxPairs.push([sBox, dBox]);
+          setClipBoxInputs(sBox, dBox);
+
+          break;
+        }
+        case 2: { // 性别
+          disableClipBoxInputs();
+          const leftBox = [302, 484, 17, 16],
+              rightBox = [350, 484, 17, 16];
+          boxPairs.push([leftBox, rightBox]);
+          boxPairs.push([rightBox, leftBox]);
+          break;
+        }
+        default: {  // 时间，待收货
+          enableClipBoxInputs();
+          let sBox, dBox;
+          if (nodeName === 'SELECT') {
+            [sBox, dBox] = getDefaultBoxes(clipType);
+          } else { // 修改尺寸
+            [sBox, dBox] = [sBoxInput, dBoxInput];
+          }
+          boxPairs.push([sBox, dBox]);
+          setClipBoxInputs(sBox, dBox);
+          break;
+        }
+      }
+
+      // 返回付款金额最左侧像素的x坐标
+      function getStartX(coverImg) {
+        const canvas = document.createElement('canvas');
+        const width = coverImg.width;
+        const height = coverImg.height;
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(coverImg, 0, 0);
+
+        const imageData = ctx.getImageData(0, 0, width, height);
+        for (let x = 0; x < width; x++) {
+          const [r, g, b] = getColorByCoordinates(x, 2258, imageData);
+          if (r >= 200 && g <= 200 && b <= 200) {
+            return x;
+          }
+        }
+        return 488;
+
+        function getColorByCoordinates(x, y, imageData) {
+          const red = y * imageData.width * 4 + x * 4;
+          const color = [];
+          for (let i = 0; i < 4; i++) {
+            color[i] = imageData.data[red + i];
+          }
+          return color;
+        }
+      }
+
+      return boxPairs;
+    }
+
+    function getDefaultBoxes(clipType) {
+      let sBox, dBox;
+      [sBox, dBox] = defaultBoxes[clipType];
+      if (!sBox) {  // 无需指定大小，仅占位
+        sBox = [0, 0, 0, 0];
+      }
+      dBox = dBox || sBox;  // dBox可能为undefined
+      return [sBox, dBox];
+    }
+
+    function getClipBoxInputs(clipType) {
+      const sBox = ['sx', 'sy', 'sWidth', 'sHeight'].map(
+          id => document.getElementById(id).value);
+      const dBox = ['dx', 'dy', 'dWidth', 'dHeight'].map(
+          id => document.getElementById(id).value);
+
+      const hasEmptyField = [sBox, dBox].flat().some(len => len === '');
+      if (hasEmptyField) {
+        setClipBoxInputs(...getDefaultBoxes(clipType));
+        return getClipBoxInputs(clipType);
+      }
+
+      return [sBox, dBox];
+    }
+
+    function setClipBoxInputs(sBox, dBox) {
+      ['sx', 'sy', 'sWidth', 'sHeight'].forEach((id, i) => {
+        document.getElementById(id).value = sBox[i];
+      });
+      ['dx', 'dy', 'dWidth', 'dHeight'].forEach((id, i) => {
+        document.getElementById(id).value = dBox[i];
+      });
+    }
+
+    function disableClipBoxInputs(type = 0) {
+      let ids = [
+        'sx', 'sy', 'sWidth', 'sHeight',
+        'dx', 'dy', 'dWidth', 'dHeight',
+      ];
+      if (type === 1) {
+        ids = ids.slice(0, 4);
+      } else if (type === 2) {
+        ids = ids.slice(4);
+      }
+
+      ids.forEach((id, i) => {
+        document.getElementById(id).disabled = true;
+      });
+    }
+
+    function enableClipBoxInputs() {
+      [
+        'sx', 'sy', 'sWidth', 'sHeight',
+        'dx', 'dy', 'dWidth', 'dHeight',
+      ].forEach((id, i) => {
+        document.getElementById(id).disabled = false;
+      });
+    }
+
+  </script>
+  <style>
+    form > div {
+      margin: .3em 0;
+    }
+
+    .number {
+      width: 6em;
+      margin-right: 1em;
+    }
+
+    #outputImg {
+      width: calc(40vw + 25em);
+    }
+  </style>
+</head>
+<body>
+<form id="form">
+  <div>
+    <label for="contentImgInput">内容截图：</label>
+    <input accept="image/*" id="contentImgInput" name="contentImgInput"
+           type="file">
+  </div>
+  <div>
+    <label for="coverImgInput">覆盖截图：</label>
+    <input accept="image/*" id="coverImgInput" name="coverImgInput" type="file">
+  </div>
+  <div>
+    <label for="clipType">剪切类型：</label>
+    <select id="clipType" name="clipType">
+      <option value="0">待收货</option>
+      <option value="1">时间</option>
+      <option value="2">性别</option>
+      <option value="3">实付款</option>
+    </select>
+  </div>
+  <div>
+    <label for="sx">sx：</label>
+    <input class="number" id="sx" name="sx" type="number">
+    <label for="sy">sy：</label>
+    <input class="number" id="sy" name="sy" type="number">
+    <label for="sWidth">sWidth：</label>
+    <input class="number" id="sWidth" name="sWidth" type="number">
+    <label for="sHeight">sHeight：</label>
+    <input class="number" id="sHeight" name="sHeight" type="number">
+  </div>
+  <div>
+    <label for="dx">dx：</label>
+    <input class="number" id="dx" name="dx" type="number">
+    <label for="dy">dy：</label>
+    <input class="number" id="dy" name="dy" type="number">
+    <label for="dWidth">dWidth：</label>
+    <input class="number" id="dWidth" name="dWidth" type="number">
+    <label for="dHeight">dHeight：</label>
+    <input class="number" id="dHeight" name="dHeight" type="number">
+  </div>
+  <output>
+    <div id="info"></div>
+    <div><a id="imgDownload"></a></div>
+    <div><img alt="" id="outputImg" src=""></div>
+  </output>
+</form>
+
+
+</body>
+</html>
