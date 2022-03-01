@@ -8,9 +8,13 @@
     const ctx = canvas.getContext('2d');
 
     form.onchange = async (event) => {
-      const contentFile = contentImgInput.files[0];
-      const coverFile = coverImgInput.files[0];
+      let contentFile = contentImgInput.files[0];
+      let coverFile = coverImgInput.files[0];
+      const type = +clipType.value;
 
+      if ((contentFile || coverFile) && type === 2) {
+        coverFile = coverFile = contentFile || coverFile;
+      }
       if (!contentFile || !coverFile) {
         return;
       }
@@ -22,15 +26,17 @@
       canvas.height = contentImg.height;
       ctx.drawImage(contentImg, 0, 0);
 
-      let sBox;
-      if (event.target.nodeName === 'SELECT') {
-        const type = +clipType.value;
-        sBox = getClipBox(coverImg, type);
+      let boxPairs;
+      if (event.target.nodeName === 'SELECT' ||
+          (event.target.nodeName === 'INPUT' && event.target.type === 'file')) {
+        boxPairs = getClipBoxes(coverImg, type);
       } else {
-        sBox = getClipBox(coverImg);
+        boxPairs = getClipBoxes(coverImg);
       }
 
-      ctx.drawImage(coverImg, ...sBox, ...sBox);
+      for (const [sBox, dBox] of boxPairs) {
+        ctx.drawImage(coverImg, ...sBox, ...dBox);
+      }
 
       outputImg.src = canvas.toDataURL('image/jpeg', 1);
       info.textContent = `图片尺寸：宽${canvas.width}，高${canvas.height}`;
@@ -50,7 +56,8 @@
       });
     }
 
-    function getClipBox(coverImg, type) {
+    function getClipBoxes(coverImg, type) {
+      const boxPairs = [];
       const boxes = [
         [45, 620, 986, 172],
         [0, 0, coverImg.width, 75],
@@ -59,16 +66,33 @@
           syValue = sy.value,
           sWithValue = sWith.value,
           sHeightValue = sHeight.value;
-      if (sxValue + syValue + sWithValue + sHeightValue === '') {
-        type = 0;
+
+      if (typeof type === 'number') {   // 下拉框更改
+        if (type === 2) {
+          [sx, sy, sWith, sHeight].forEach(el => {
+            el.disabled = true;
+          });
+          const leftBox = [302, 484, 17, 16],
+              rightBox = [350, 484, 17, 16];
+          boxPairs.push([leftBox, rightBox]);
+          boxPairs.push([rightBox, leftBox]);
+        } else {
+          [sx, sy, sWith, sHeight].forEach(el => {
+            el.disabled = false;
+          });
+          sxValue = sx.value = boxes[type][0];
+          syValue = sy.value = boxes[type][1];
+          sWithValue = sWith.value = boxes[type][2];
+          sHeightValue = sHeight.value = boxes[type][3];
+          const sBox = [sxValue, syValue, sWithValue, sHeightValue];
+          boxPairs.push([sBox, sBox]);
+        }
+      } else {  // 尺寸更改
+        const sBox = [sxValue, syValue, sWithValue, sHeightValue];
+        boxPairs.push([sBox, sBox]);
       }
-      if (typeof type === 'number') {
-        sxValue = sx.value = boxes[type][0];
-        syValue = sy.value = boxes[type][1];
-        sWithValue = sWith.value = boxes[type][2];
-        sHeightValue = sHeight.value = boxes[type][3];
-      }
-      return [sxValue, syValue, sWithValue, sHeightValue];
+
+      return boxPairs;
     }
 
 
@@ -84,7 +108,7 @@
     }
 
     #outputImg {
-      width: 80vw;
+      width: calc(60vw + 15em);
     }
   </style>
 </head>
@@ -104,6 +128,7 @@
     <select id="clipType" name="clipType">
       <option value="0">待收货</option>
       <option value="1">时间</option>
+      <option value="2">性别</option>
     </select>
   </div>
   <div>
