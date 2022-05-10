@@ -1,1 +1,1 @@
-document.body.innerHTML='hhh';
+alert('hello')
