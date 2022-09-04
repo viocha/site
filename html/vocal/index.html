@@ -261,7 +261,7 @@
 
 <body>
 
-<form id="app">
+<div id="app">
   <div class="config">
     <span>key:
       <input type="text" v-model="key" @keydown.up="onUp" @keydown.down="onDown" @keydown.enter.right="play"
@@ -289,14 +289,14 @@
     <button @click="stopPlaying">stop</button>
   </div>
 
-  <div class="songs">
+  <form class="songs">
     <div v-for="x,i in songs">
       <input type="radio" name="selectedSong" v-model="selectedSong" :value="i" :id="i">
       <label :for="i">
         {{normalizeDots(x)}}
       </label>
     </div>
-  </div>
+  </form>
 
   <div>
     <input type="checkbox" id="isCustom" v-model="isCustom">
@@ -304,7 +304,7 @@
     <input type="text" :disabled="!isCustom" v-model="customSong">
   </div>
 
-</form>
+</div>
 
 <div id="shortcut-tip">可用的快捷键: W S I J K L ; 方向键和回车键</div>
 
