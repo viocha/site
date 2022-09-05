@@ -354,7 +354,7 @@
 
 <div id="app">
   <div class="config">
-    <button v-for="k in this.keyList" :id="k" @click="this.key=k">{{k}}</button>
+    <button v-for="k in this.keyList" :id="k" @click="this.key=k;this.playKeyNote();">{{k}}</button>
   </div>
 
   <div class="config">
