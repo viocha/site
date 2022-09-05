@@ -102,7 +102,7 @@
       ];
 
       const keyList = [];
-      for (let note = new Note('F2'); note.toString()!=='C#4'; note = note.add(1)){
+      for (let note = new Note('F2'); note.toString()!=='F#4'; note = note.add(1)){
         keyList.push(note.toString());
       }
 
@@ -314,6 +314,10 @@
       content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0"/>
 <style>
   @import url("https://fonts.googleapis.com/css2?family=Gentium+Book+Plus&display=swap");
+
+  body {
+    zoom : 1.2 !important;
+  }
 
   #songs {
     font-family : "Gentium Book Plus", "Sitka Text", Corbel, sans-serif;
