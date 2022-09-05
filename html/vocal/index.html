@@ -236,14 +236,14 @@
           case 'KeyS':{
             const newValue = (+songList.value+1)%songList.length;
             songList[newValue].checked = true;
-            songList[newValue].dispatchEvent(new Event('change'));
+            songList[newValue].dispatchEvent(new Event('change',{bubbles:true}));
             break;
           }
           case 'KeyW':{
             const len = songList.length;
             const newValue = ((+songList.value-1)%len+len)%len;
             songList[newValue].checked = true;
-            songList[newValue].dispatchEvent(new Event('change'));
+            songList[newValue].dispatchEvent(new Event('change', {bubbles: true}));
             break;
           }
           case 'KeyA':{
