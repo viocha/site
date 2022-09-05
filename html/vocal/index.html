@@ -109,6 +109,7 @@
         }
 
         const now = Tone.now()-1; // 会有延迟
+        this.stopPlaying();
         piano.triggerAttackRelease(this.key, this.duration, now);
       }, stopPlaying(){
         piano.releaseAll();
@@ -128,7 +129,7 @@
         let startTime = now;
         let lastNote = new Note(notes[0]);
 
-        piano.releaseAll(); // 释放上次的播放
+        this.stopPlaying(); // 释放上次的播放
         notes.forEach((v, i) => {
           if (i===0){
             // piano.triggerAttackRelease(note.toString(), this.duration, startTime);
@@ -216,24 +217,21 @@
 
       // 全局快捷键
       document.onkeydown = e => {
-        if (e.repeat){
-          return;
-        }
         switch (e.code){
           case 'KeyI':
-            this.onUp();
+            this.onUp(e);
             break;
           case 'KeyK':
-            this.onDown();
+            this.onDown(e);
             break;
           case 'KeyJ':
-            this.playKeyNote();
+            this.playKeyNote(e);
             break;
           case 'KeyL':
-            this.play();
+            this.play(e);
             break;
           case 'Semicolon':
-            this.stopPlaying();
+            this.stopPlaying(e);
             break;
           case 'KeyS':{
             const newValue = (+songList.value+1)%songList.length;
