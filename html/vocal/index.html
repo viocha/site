@@ -77,7 +77,7 @@
   const APP = {
     data(){
       const DATA = {
-        duration: 2, interval: 0.3, selectedSong: 0, key: 'C3', isCustom: false, customSong: '',
+        duration: 3, interval: 0.3, selectedSong: 0, key: 'C3', isCustom: false, customSong: '',
       };
 
       const songs = [
@@ -103,12 +103,20 @@
       }, onDown(){
         this.key = new Note(this.key).add(-1).toString();
         this.playKeyNote();
-      }, playKeyNote(){
-        const now = Tone.now();
+      }, playKeyNote(e){
+        if (e?.repeat){
+          return;
+        }
+
+        const now = Tone.now()-1; // 会有延迟
         piano.triggerAttackRelease(this.key, this.duration, now);
       }, stopPlaying(){
         piano.releaseAll();
-      }, play(){
+      }, play(e){
+        if (e?.repeat){
+          return;
+        }
+
         const song = this.getSelectedSong()[0];
 
         const notes = song.replaceAll(/(?<!\s)-/g, ' -').split(/\s+/).map(toName);
@@ -208,6 +216,9 @@
 
       // 全局快捷键
       document.onkeydown = e => {
+        if (e.repeat){
+          return;
+        }
         switch (e.code){
           case 'KeyI':
             this.onUp();
