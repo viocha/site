@@ -69,9 +69,6 @@
     }
   }
 
-  // bpm
-  Tone.Transport.bpm.value = 60;
-
   // 加载音色
   window.piano = SampleLibrary.load({
                                       instruments: 'piano',
@@ -80,16 +77,21 @@
   const APP = {
     data(){
       const DATA = {
-        duration: '4n', interval: 0.3, selectedSong: 0, key: 'C3', isCustom: false, customSong: '',
+        duration: 2, interval: 0.3, selectedSong: 0, key: 'C3', isCustom: false, customSong: '',
       };
 
       const songs = [
         '1 2 3 4 5 4 3 2 1',
+
         '1 3 5 1. 5 3 1',
+
         '1 3 5 1. 1. 1. 1. 5 3 1',
+
         '1 3 5 1.--- 5 3 1',
-        '1 3 5 1. 3. 5. 4. 2. 7 5 4 2 1',
-        '1- 3 5-  1.- 3. 5.-   4.- 2. 7-   5- 4 2-   1-',
+
+        ['1 3 5 1. 3. 5. 4. 2. 7 5 4 2 1', 0.2],
+
+        ['1- 3 5-  1.- 3. 5.-   4.- 2. 7-   5- 4 2-   1-', 0.2],
       ];
 
       Object.assign(DATA, {songs});
@@ -107,7 +109,8 @@
       }, stopPlaying(){
         piano.releaseAll();
       }, play(){
-        const song = this.isCustom? this.customSong : this.songs[this.selectedSong];
+        const song = this.getSelectedSong()[0];
+
         const notes = song.replaceAll(/(?<!\s)-/g, ' -').split(/\s+/).map(toName);
         const key = Note.normalizeName(this.key);
 
@@ -139,9 +142,15 @@
           piano.triggerAttack(note.toString(), startTime);
         });
 
-      }, normalizeDots(s){
-        return s.replaceAll(/(?<!\s)-/g, ' -').split(/\s+/).map(normalize).join(' ');
+      }, // 返回用于显示的练声曲
+      getDisplaySong(i){
+        let song = this.songs[i];
+        if (Array.isArray(song)){
+          song = song[0];
+        }
+        return song.replaceAll(/(?<!\s)-/g, ' -').split(/\s+/).map(normalize).join(' ');
 
+        // 替换点号的显示
         function normalize(s){
           let n = s.match(/\d/)?.[0];
           if (!n){
@@ -163,24 +172,41 @@
           // return `$${n}$`;
           return n;
         }
-      }, getRange(){
+      }, //曲子的音高范围
+      getRange(){
         const key = Note.normalizeName(this.key);
         const keyNote = new Note(key);
 
-        const song = this.isCustom? this.customSong : this.songs[this.selectedSong];
+        const song = this.getSelectedSong()[0];
         let notes = song.split(/\s+/)
                         .map(toName)
                         .filter(x => x!=='-')
                         .map(x => new Note(x));
+
         const firstNote = notes[0];
         notes = notes.map(x => keyNote.add(x.diff(firstNote)))
                      .sort((a, b) => a.order-b.order);
 
         return notes[0]+' - '+notes.at(-1);
+      }, onSongChange(){
+        this.interval = this.getSelectedSong()[1];
+      }, // 返回[song,interval]
+      getSelectedSong(){
+        let song = this.isCustom? this.customSong : this.songs[this.selectedSong];
+        let interval;
+        if (Array.isArray(song)){
+          interval = song[1];
+          song = song[0];
+        } else {
+          interval = 0.3;
+        }
+
+        return [song, interval];
       },
     }, mounted(){
       const songList = document.forms[0]['selectedSong'];
 
+      // 全局快捷键
       document.onkeydown = e => {
         switch (e.code){
           case 'KeyI':
@@ -209,6 +235,14 @@
             const newValue = ((+songList.value-1)%len+len)%len;
             songList[newValue].checked = true;
             songList[newValue].dispatchEvent(new Event('change'));
+            break;
+          }
+          case 'KeyA':{
+            document.getElementById('intervalDown').click();
+            break;
+          }
+          case 'KeyD':{
+            document.getElementById('intervalUp').click();
             break;
           }
         }
@@ -244,7 +278,7 @@
 <style>
   @import url("https://fonts.googleapis.com/css2?family=Gentium+Book+Plus&display=swap");
 
-  .songs {
+  #songs {
     font-size   : 1.5em;
     font-family : "Gentium Book Plus", "Sitka Text", Corbel, sans-serif;
   }
@@ -287,8 +321,8 @@
   <div class="config">
     interval:
     <input type="number" step="0.05" v-model.number="interval">
-    <button @click="this.interval-=0.05">-</button>
-    <button @click="this.interval+=0.05">+</button>
+    <button id="intervalDown" @click="this.interval-=0.05">-</button>
+    <button id="intervalUp" @click="this.interval+=0.05">+</button>
   </div>
 
   <div class="config">duration:
@@ -303,11 +337,11 @@
     <button @click="stopPlaying">stop</button>
   </div>
 
-  <form class="songs">
+  <form id="songs" @change="onSongChange">
     <div v-for="x,i in songs">
       <input type="radio" name="selectedSong" v-model="selectedSong" :value="i" :id="i" :disabled="isCustom">
       <label :for="i" :class="{disabled:isCustom}">
-        {{normalizeDots(x)}}
+        {{getDisplaySong(i)}}
       </label>
     </div>
   </form>
@@ -320,7 +354,7 @@
 
 </div>
 
-<div id="shortcut-tip">可用的快捷键: W S I J K L ; 方向键和回车键</div>
+<div id="shortcut-tip">可用的快捷键: W S A D I K J L ; 方向键和回车键</div>
 
 </body>
 </html>
