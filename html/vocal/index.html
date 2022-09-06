@@ -467,7 +467,8 @@
     <button id="intervalUp" @click="interval+=0.05">+</button>
   </div>
 
-  <div class="config">duration:
+  <!-- duration不能控制 -->
+  <div class="config" hidden>duration:
     <input type="text" v-model="duration" disabled>
   </div>
 
