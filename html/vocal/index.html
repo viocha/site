@@ -88,7 +88,7 @@
       };
 
       const songs = [
-        ['1 2 3 4 5 4 3 2 1', 0.35],
+        '1 2 3 4 5 4 3 2 1',
 
         ['1 2 3 4 5 - - - 4 3 2 1', 0.25],
 
@@ -384,7 +384,7 @@
   @import url("https://fonts.googleapis.com/css2?family=Gentium+Book+Plus");
 
   #songs {
-    font-family :  sans-serif;
+    font-family : sans-serif;
   }
 
   .config {
@@ -433,7 +433,7 @@
   <div class="config">
     点击选择key: <br>
     <template v-for="x,i in keyList">
-      <button @click="key=x;playKeyNote();">{{x}}</button>
+      <button @click="key=x;playKeyNote();" :id="x">{{x}}</button>
       <br v-if="i%12==6">
     </template>
   </div>
