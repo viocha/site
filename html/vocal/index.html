@@ -390,6 +390,10 @@
     font-family : unifont, serif;
   }
 
+  .keyList {
+    margin-bottom : 1em;
+  }
+
   .config {
     margin : 0.2em 0;
   }
@@ -433,11 +437,11 @@
 <body>
 
 <div id="app">
-  <div class="config">
+  <div class="keyList">
     点击选择key: <br>
     <template v-for="x,i in keyList">
       <button @click="key=x;playKeyNote();" :id="x">{{x}}</button>
-      <br v-if="i%12==6">
+      <br v-if="i%12==6"> <br v-if="i%12==6">
     </template>
   </div>
 
@@ -447,12 +451,12 @@
              @keydown.left="playKeyNote">
     </span>
 
+    <span>range: {{getRange()}} </span>
+
     <span>
       <button @click="playLow" id="playLow">low</button>
       <button @click="playHigh" id="playHigh">high</button>
     </span>
-
-    <span>range: {{getRange()}} </span>
 
   </div>
 
@@ -495,7 +499,7 @@
       音高检查: <br>
       <template v-for="x,i in pitchList">
         <button @click="playPitch(x,$event);">{{x}}</button>
-        <br v-if="i%12==11">
+        <br v-if="i%12==11"> <br v-if="i%12==11">
       </template>
     </div>
 
