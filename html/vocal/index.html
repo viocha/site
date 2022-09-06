@@ -106,9 +106,9 @@
 
         ['1 3 5 1.--- 5 3 1', 0.25],
 
-        ['1 3 5 1. 3. 5. 4. 2. 7 5 4 2 1-', 0.25, 'F2'],
+        ['1 3 5 1. 3. 5. 4. 2. 7 5 4 2 1', 0.25, 'F2'],
 
-        ['1- 3 5-  1.- 3. 5.-   4.- 2. 7-   5- 4 2-   1-', 0.2, 'F2'],
+        ['1- 3 5-  1.- 3. 5.-   4.- 2. 7-   5- 4 2-   1', 0.2, 'F2'],
       ];
 
       const keyList = [];
@@ -216,7 +216,7 @@
         if (Array.isArray(song)){
           song = song[0];
         }
-        return song.replaceAll(/(?<!\s)-/g, ' -').split(/\s+/).map(normalize).join(' ');
+        return song.replaceAll(/(?<!\s)-/g, ' -').split(/\s+/).map(normalize).join(' ').replaceAll(' -', '-');
 
         // 替换点号的显示
         function normalize(s){
