@@ -106,16 +106,51 @@
         keyList.push(note.toString());
       }
 
-      Object.assign(DATA, {songs, keyList});
+      const pitchList = [];
+      for (let note = new Note('C2'); note.toString()!=='C6'; note = note.add(1)){
+        pitchList.push(note.toString());
+      }
+
+      Object.assign(DATA, {songs, keyList, pitchList});
       return DATA;
     }, methods: {
       onUp(){
         this.key = new Note(this.key).add(1).toString();
         this.playKeyNote();
-      }, onDown(){
+      },
+
+      onDown(){
         this.key = new Note(this.key).add(-1).toString();
         this.playKeyNote();
-      }, playKeyNote(e){
+      },
+
+      playLow(e){
+        if (e?.repeat){
+          return;
+        }
+        const now = Tone.now()-0.1; // 会有延迟
+        this.stopPlaying();
+        piano.triggerAttack(this.getRange().split(' - ')[0], now);
+
+      },
+
+      playHigh(e){
+        if (e?.repeat){
+          return;
+        }
+        const now = Tone.now()-0.1; // 会有延迟
+        this.stopPlaying();
+        piano.triggerAttack(this.getRange().split(' - ')[1], now);
+
+      },
+
+      playPitch(name){
+        const now = Tone.now()-0.1; // 会有延迟
+        this.stopPlaying();
+        piano.triggerAttack(name, now);
+      },
+
+      playKeyNote(e){
         if (e?.repeat){
           return;
         }
@@ -123,9 +158,13 @@
         const now = Tone.now()-0.1; // 会有延迟
         this.stopPlaying();
         piano.triggerAttack(this.key, now);
-      }, stopPlaying(){
+      },
+
+      stopPlaying(){
         piano.releaseAll();
-      }, play(e){
+      },
+
+      play(e){
         if (e?.repeat){
           return;
         }
@@ -163,7 +202,9 @@
           piano.triggerAttack(note.toString(), startTime);
         });
 
-      }, // 返回用于显示的练声曲
+      },
+
+      // 返回用于显示的练声曲
       getDisplaySong(i){
         let song = this.songs[i];
         if (Array.isArray(song)){
@@ -193,7 +234,9 @@
           // return `$${n}$`;
           return n;
         }
-      }, //曲子的音高范围
+      },
+
+      //曲子的音高范围
       getRange(){
         const key = Note.normalizeName(this.key);
         const keyNote = new Note(key);
@@ -209,10 +252,14 @@
                      .sort((a, b) => a.order-b.order);
 
         return notes[0]+' - '+notes.at(-1);
-      }, onSongChange(){
+      },
+
+      onSongChange(){
         this.interval = this.getSelectedSong()[1];
         this.key = this.getSelectedSong()[2];
-      }, // 返回[song,interval,key]
+      },
+
+      // 返回[song,interval,key]
       getSelectedSong(){
         let song = this.isCustom? this.customSong : this.songs[this.selectedSong];
         let interval, key;
@@ -227,7 +274,9 @@
 
         return [song, interval, key];
       },
-    }, mounted(){
+    },
+
+    mounted(){
       const songList = document.forms[0]['selectedSong'];
 
       // 全局快捷键
@@ -245,6 +294,7 @@
         }
 
         switch (e.code){
+            // 换调和播放暂停
           case 'KeyI':
             this.onUp(e);
             break;
@@ -260,6 +310,8 @@
           case 'Semicolon':
             this.stopPlaying(e);
             break;
+
+            // 换曲子
           case 'KeyS':{
             const newValue = (+songList.value+1)%songList.length;
             songList[newValue].checked = true;
@@ -273,6 +325,8 @@
             songList[newValue].dispatchEvent(new Event('change', {bubbles: true}));
             break;
           }
+
+            // 调间隔
           case 'KeyA':{
             document.getElementById('intervalDown').click();
             break;
@@ -281,6 +335,14 @@
             document.getElementById('intervalUp').click();
             break;
           }
+
+            // 播放最低和最高音
+          case 'KeyU':
+            document.getElementById('playLow').click();
+            break;
+          case 'KeyO':
+            document.getElementById('playHigh').click();
+            break;
         }
       };
     },
@@ -335,6 +397,10 @@
     margin-right : 1em;
   }
 
+  .config button {
+    padding : 0 1em;
+  }
+
   .buttons {
     padding : 0.5em 0;
   }
@@ -348,6 +414,10 @@
     color      : gray;
   }
 
+  #pitchCheck {
+    margin-top : 1em;
+  }
+
   .disabled {
     opacity : 0.5;
   }
@@ -359,7 +429,11 @@
 
 <div id="app">
   <div class="config">
-    <button v-for="k in this.keyList" :id="k" @click="this.key=k;this.playKeyNote();">{{k}}</button>
+    点击选择key: <br>
+    <template v-for="x,i in keyList">
+      <button @click="key=x;playKeyNote();">{{x}}</button>
+      <br v-if="i%12==6">
+    </template>
   </div>
 
   <div class="config">
@@ -368,15 +442,18 @@
              @keydown.left="playKeyNote">
     </span>
 
-    <span>range: {{getRange()}} </span>
+    <span>range: {{getRange()}} </span> <span>
+    <button @click="playLow" id="playLow">low</button>
+    <button @click="playHigh" id="playHigh">high</button>
+  </span>
 
   </div>
 
   <div class="config">
     interval:
     <input type="number" step="0.05" v-model.number="interval">
-    <button id="intervalDown" @click="this.interval-=0.05">-</button>
-    <button id="intervalUp" @click="this.interval+=0.05">+</button>
+    <button id="intervalDown" @click="interval-=0.05">-</button>
+    <button id="intervalUp" @click="interval+=0.05">+</button>
   </div>
 
   <div class="config">duration:
@@ -406,9 +483,31 @@
     <input type="text" :disabled="!isCustom" v-model="customSong">
   </div>
 
-</div>
+  <div id="pitchCheck">
+    音高检查: <br>
+    <template v-for="x,i in pitchList">
+      <button @click="playPitch(x);">{{x}}</button>
+      <br v-if="i%12==11">
+    </template>
+  </div>
 
-<div id="shortcut-tip">可用的快捷键: W S A D I K J L ; 方向键和回车键</div>
+  <div id="shortcut-tip">
+    快捷键: <br>
+
+    换曲子: W S <br>
+
+    调整间隔: A D <br>
+
+    调整首音: I K <br>
+
+    播放和暂停: J L ; <br>
+
+    播放最低最高音:U O <br>
+
+    只在key输入框内有效: 方向键和回车键
+  </div>
+
+</div>
 
 </body>
 </html>
