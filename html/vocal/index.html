@@ -388,10 +388,15 @@
 
   #songs {
     font-family : unifont, serif;
+    font-weight: bold;
   }
 
-  .keyList {
+  .key-list {
     margin-bottom : 1em;
+  }
+
+  :is(.key-list,#pitchCheck) button {
+    width : 4em;
   }
 
   .config {
@@ -437,7 +442,7 @@
 <body>
 
 <div id="app">
-  <div class="keyList">
+  <div class="key-list">
     点击选择key: <br>
     <template v-for="x,i in keyList">
       <button @click="key=x;playKeyNote();" :id="x">{{x}}</button>
@@ -492,7 +497,7 @@
 
     <div>
       <input type="checkbox" id="isCustom" v-model="isCustom">
-      <label for="isCustom">custom:</label>
+      <label for="isCustom">custom: </label>
       <input type="text" :disabled="!isCustom" v-model="customSong">
     </div>
 
