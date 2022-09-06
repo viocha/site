@@ -381,10 +381,13 @@
 <meta charset="utf-8" name="viewport"
       content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0"/>
 <style>
-  @import url("https://fonts.googleapis.com/css2?family=Gentium+Book+Plus");
+  @font-face {
+    font-family : unifont;
+    src         : local("unifont"), url(assets/font/unifont-14.0.04.ttf);
+  }
 
   #songs {
-    font-family : sans-serif;
+    font-family : unifont, serif;
   }
 
   .config {
