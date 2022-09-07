@@ -386,11 +386,17 @@
 <style>
 
   body, button, input {
-    font-size   : 3.5vw;
+    font-size   : 16px;
     font-family : sans-serif;
   }
 
-  input[type="checkbox" i] {
+  @media screen and (max-width : 450px) {
+    body, button, input {
+      font-size : 3.5vw;
+    }
+  }
+
+  input[type="checkbox"] {
     vertical-align : middle;
   }
 
@@ -494,7 +500,7 @@
     <input type="text" v-model="duration" disabled>
   </div>
 
-  <div class="buttons indent">
+  <div class="buttons">
     <button @click="onDown">down</button>
     <button @click="onUp">up</button>
   </div>
