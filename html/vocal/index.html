@@ -257,7 +257,10 @@
         notes = notes.map(x => keyNote.add(x.diff(firstNote)))
                      .sort((a, b) => a.order-b.order);
 
-        return notes[0]+' - '+notes.at(-1);
+        if (notes.length){
+          return notes[0]+' - '+notes.at(-1);
+        }
+        return '';
       },
 
       onSongChange(){
@@ -417,9 +420,9 @@
     padding : 0.1em 0.2em;
   }
 
-  .buttons{
-    text-align: center;
-    margin: 0.3em 0;
+  .buttons {
+    text-align : center;
+    margin     : 0.3em 0;
   }
 
   .config, #songs {
