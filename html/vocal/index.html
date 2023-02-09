@@ -60,6 +60,11 @@
     margin : 0 0.1em;
   }
 
+  #customSong{
+    width : 80%;
+    margin-left : 1em;
+  }
+
   :is(.key-list, #pitchCheck) button,
   .config input {
     width : 4em;
@@ -170,7 +175,7 @@
   <div>
     <input type="checkbox" id="isCustom" v-model="isCustom">
     <label for="isCustom">custom:</label>
-    <input type="text" :disabled="!isCustom" v-model="customSong">
+    <input type="text" :disabled="!isCustom" v-model="customSong" id="customSong">
   </div>
 
   <div id="pitchCheck">
