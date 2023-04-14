@@ -16,5 +16,8 @@
   "bugs": {
     "url": "https://github.com/viocha/mysite/issues"
   },
-  "homepage": "https://github.com/viocha/mysite#readme"
+  "homepage": "https://github.com/viocha/mysite#readme",
+  "dependencies": {
+    "vue": "^3.2.47"
+  }
 }
