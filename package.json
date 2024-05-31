@@ -1,11 +1,12 @@
 {
   "name": "mysite",
-  "type": "commonjs",
+  "type": "module",
   "version": "1.0.0",
   "description": "",
   "main": "./create-index.js",
   "scripts": {
-    "add-index": "node-run build/create-index.js"
+    "add-index": "node-run build/create-index.js",
+    "commit-and-push": "node-run build/commit-and-push.js"
   },
   "repository": {
     "type": "git",
