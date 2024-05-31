@@ -1,9 +1,12 @@
 const fs = require('fs');
 const path = require('path');
 
+const idxPath=path.resolve(__dirname, '../index.html');
+const htmlPath = path.resolve(__dirname, '../html');
+
 let html = '';
-scanHtmlFiles('./html');
-fs.writeFileSync('index.html', html, { encoding: 'utf8' });
+scanHtmlFiles(htmlPath);
+fs.writeFileSync(idxPath, html, { encoding: 'utf8' });
 
 function scanHtmlFiles(dir) {
   fs.readdirSync(dir).sort((a, b) => {
@@ -18,7 +21,7 @@ function scanHtmlFiles(dir) {
         const indent = fullName.match(/\\/g)?.length || 0;
         html += `<div style="padding-left:${indent}em;"><a href="${fullName}">${fullName}</a></div>`;
       }
-      else {
+      else if (fs.statSync(fullName).isDirectory()) {
         scanHtmlFiles(fullName);
       }
     });

@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>大模型聚合</title>
+<script src="lib/js/jquery.min.js"></script>
+<script type="module">
+  const sites=[
+    ['通义千问','https://tongyi.aliyun.com/qianwen/'], // 无法解决跨域
+    ['智谱清言','https://chatglm.cn/main/alltoolsdetail'],
+    ['Copilot','https://copilot.microsoft.com/'],
+    ['AI Studio','https://aistudio.google.com/app/prompts/new_chat'], // ModHeader修改Sec-Fetch-Dest为document即可
+    ['海螺问问','https://hailuoai.com/'],
+    ['Kimi','https://kimi.moonshot.cn/chat'],
+  ]
+  debug.append(jQuery);
+  $('#pages').append(sites.map(([name,url])=>{
+    return `<div class="page" resizable>
+      <iframe src="${url}"></iframe>
+    </div>`;
+  }));
+</script>
+<style>
+  :root{
+    --cols: 2;
+    --page-width: calc(100vw / var(--cols) - 4em);
+    --page-height: calc(var(--page-width)/1.5);
+  }
+
+  #pages{
+    display: grid;
+    grid-template-columns: repeat(var(--cols), 1fr);
+    gap: 0.5em;
+  }
+
+  .page{
+    height : max(60vh, 40em);
+
+    border : 1px solid lightblue;
+    border-radius: 1em;
+    resize: vertical;
+    overflow: hidden;
+  }
+
+  .page > iframe{
+    width: 100%;
+    height: 100%;
+    border: none;
+  }
+</style>
+</head>
+<body>
+
+<div id="pages">
+
+</div>
+
+<div id="debug">
+
+</div>
+
+</body>
+
+
+</html>
