@@ -6,15 +6,16 @@
 <script src="./lib/js/jquery.min.js"></script>
 <script type="module">
   const sites=[
-    ['Copilot','https://copilot.microsoft.com'],
     ['智谱清言','https://chatglm.cn/main/alltoolsdetail'],
+    ['Copilot','https://copilot.microsoft.com'],
     ['AI Studio','https://aistudio.google.com/app/prompts/new_chat'], // ModHeader修改Sec-Fetch-Dest为document即可
-    ['通义千问','https://tongyi.aliyun.com/qianwen/'], // 无法解决跨域，而且无法通过js修改输入框内容
     ['豆包','https://www.doubao.com/chat'],
     ['海螺问问','https://hailuoai.com/'],
-    ['Kimi','https://kimi.moonshot.cn/chat'],
+    ['通义千问','https://tongyi.aliyun.com/qianwen/'], // 无法解决登录cookie跨域，未登录状态下消息有限制
+    ['Kimi','https://kimi.moonshot.cn/chat'], // 无法模拟slate的编辑器的输入
     // ['百川','https://ying.baichuan-ai.com/chat'], // 这两个没有登录不能用，需要其他解决方案
     // ['讯飞星火','https://xinghuo.xfyun.cn/'],
+    // ['测试','https://example.com'],
   ]
   // debug.append(jQuery);
   $('#pages').append(sites.map(([name,url])=>{
