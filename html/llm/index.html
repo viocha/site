@@ -36,6 +36,19 @@
     }
   }
 
+  @media  (max-width: 449px) {
+    body {
+      background-color: lightblue;
+    }
+  }
+
+  /* 当屏幕宽度大于等于450px时，应用这个样式 */
+  @media  (min-width: 450px) {
+    body {
+      background-color: lightgreen;
+    }
+  }
+
   #pages {
     display               : grid;
     grid-template-columns : repeat(var(--cols), 1fr);
