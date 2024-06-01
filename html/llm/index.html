@@ -5,51 +5,56 @@
 <title>大模型聚合</title>
 <script src="./lib/js/jquery.min.js"></script>
 <script type="module">
-  const sites=[
-    ['智谱清言','https://chatglm.cn/main/alltoolsdetail'],
-    ['豆包','https://www.doubao.com/chat'],
-    ['海螺问问','https://hailuoai.com/'],
-    ['Kimi','https://kimi.moonshot.cn/chat'], // 无法模拟slate的编辑器的输入
-    ['Copilot','https://copilot.microsoft.com'],
-    ['AI Studio','https://aistudio.google.com/app/prompts/new_chat'], // ModHeader修改Sec-Fetch-Dest为document即可
-    ['通义千问','https://tongyi.aliyun.com/qianwen/'], // 无法解决登录cookie跨域，未登录状态下一天只能用一次
+  const sites = [
+    ['智谱清言', 'https://chatglm.cn/main/alltoolsdetail'],
+    ['豆包', 'https://www.doubao.com/chat'],
+    ['海螺问问', 'https://hailuoai.com/'],
+    ['Kimi', 'https://kimi.moonshot.cn/chat'], // 无法模拟slate的编辑器的输入
+    ['Copilot', 'https://copilot.microsoft.com'],
+    ['AI Studio', 'https://aistudio.google.com/app/prompts/new_chat'], // ModHeader修改Sec-Fetch-Dest为document即可
+    ['通义千问', 'https://tongyi.aliyun.com/qianwen/'], // 无法解决登录cookie跨域，未登录状态下一天只能用一次
     // ['百川','https://ying.baichuan-ai.com/chat'], // 这两个没有登录不能用，需要其他解决方案
     // ['讯飞星火','https://xinghuo.xfyun.cn/'],
     // ['测试','https://example.com'],
-  ]
+  ];
   // debug.append(jQuery);
-  $('#pages').append(sites.map(([name,url])=>{
+  $('#pages').append(sites.map(([name, url])=>{
     return `<div class="page" resizable>
       <iframe src="${url}"></iframe>
     </div>`;
   }));
 </script>
 <style>
-  :root{
-    --cols: 2;
-    --page-width: calc(100vw / var(--cols) - 4em);
-    --page-height: calc(var(--page-width)/1.5);
+
+  :root {
+    --cols : 1;
   }
 
-  #pages{
-    display: grid;
-    grid-template-columns: repeat(var(--cols), 1fr);
-    gap: 0.5em;
+  @media screen and (min-width : 450px) {
+    :root {
+      --cols : 2;
+    }
   }
 
-  .page{
-    height : max(50vh, 50em);
-
-    border : 1px solid lightblue;
-    border-radius: 1em;
-    resize: vertical;
-    overflow: hidden;
+  #pages {
+    display               : grid;
+    grid-template-columns : repeat(var(--cols), 1fr);
+    gap                   : 0.5em;
   }
 
-  .page > iframe{
-    width: 100%;
-    height: 100%;
-    border: none;
+  .page {
+    height        : max(50vh, 50em);
+
+    border        : 1px solid lightblue;
+    border-radius : 1em;
+    resize        : vertical;
+    overflow      : hidden;
+  }
+
+  .page > iframe {
+    width  : 100%;
+    height : 100%;
+    border : none;
   }
 </style>
 </head>
@@ -64,6 +69,5 @@
 </div>
 
 </body>
-
 
 </html>
