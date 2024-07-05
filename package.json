@@ -1,23 +1,13 @@
 {
-  "name": "mysite",
+  "name": "site",
+  "author": "viocha",
   "type": "module",
   "version": "1.0.0",
   "description": "",
-  "main": "./create-index.js",
   "scripts": {
     "add-index": "node-run build/create-index.js",
     "commit-and-push": "node-run build/commit-and-push.js"
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/viocha/mysite.git"
-  },
-  "author": "",
-  "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/viocha/mysite/issues"
-  },
-  "homepage": "https://github.com/viocha/mysite#readme",
   "dependencies": {
     "vue": "^3.2.47"
   }

@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>积分中值定义的证明</title>
+<script >
+  MathJax = {
+    tex: {
+      inlineMath: [['$', '$'], ['\\(', '\\)']],
+    },
+  };
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-mml-chtml.min.js"></script>
+</head>
+<body>
+积分中值定理证明：<br>
+
+因为 $f$ 是闭区间上的连续函数，$f$ 取得最大值 $M$ 和最小值 $\mu$。于是
+$$ Mg(x) \geq f(x)g(x) \geq \mu g(x). $$
+
+对不等式求积分，我们有
+$$ M\int_{\alpha}^{\beta}g(x)dx \geq \int_{\alpha}^{\beta}f(x)g(x)dx \geq \mu \int_{\alpha}^{\beta}g(x)dx. $$
+
+若 $\int_{\alpha}^{\beta}g(x)dx=0$, 则 $\int_{\alpha}^{\beta}f(x)g(x)dx=0$。$\xi$可取 $[\alpha,\beta]$ 上任一点。 <br>
+
+设 $\int_{\alpha}^{\beta}g(x)dx>0$，那么
+$$ M \geq \frac{\int_{\alpha}^{\beta}f(x)g(x)dx}{\int_{\alpha}^{\beta}g(x)dx} \geq \mu $$
+
+因为 $M \geq f(x) \geq \mu$ 是连续函数，根据介值定理，必存在一点 $\xi \in [\alpha, \beta]$，使得
+$$ f(\xi) = \frac{\int_{\alpha}^{\beta}f(x)g(x)dx}{\int_{\alpha}^{\beta}g(x)dx}. $$
+
+</body>
+</html>
